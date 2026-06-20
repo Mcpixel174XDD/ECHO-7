@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <title>Echo-7 // Access Terminal</title>
+    <style>
+        body {
+            background: #020008;
+            color: #e5e5e5;
+            font-family: Consolas, monospace;
+            padding: 40px;
+        }
+        h1 {
+            text-transform: uppercase;
+            letter-spacing: 0.25em;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+        }
+        .block {
+            margin-top: 25px;
+            padding: 18px;
+            border: 1px solid #18181b;
+            background: #050816;
+            border-radius: 4px;
+        }
+        input {
+            background: #02010b;
+            border: 1px solid #27272a;
+            color: #e5e5e5;
+            padding: 6px 8px;
+            width: 250px;
+        }
+        button {
+            background: #111827;
+            border: 1px solid #333;
+            color: #e5e5e5;
+            padding: 6px 10px;
+            cursor: pointer;
+        }
+        .hidden {
+            display: none;
+        }
+        a {
+            color: #60a5fa;
+        }
+        #finalMessage {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #333;
+            background: #0a0a12;
+            font-size: 1rem;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+
+<h1>PROJEKT ECHO‑7</h1>
+
+<div id="log1" class="block">
+    <h2>Audio Log 1</h2>
+    <p><a href="https://www.youtube.com/watch?v=TYfO--MLQKc" target="_blank">Prehrať Audio Log 1</a></p>
+    <p>Zadaj odpoveď:</p>
+    <input id="a1" type="text">
+    <button onclick="checkAnswer(1)">Overiť</button>
+    <div id="r1"></div>
+</div>
+
+<div id="log2" class="block hidden">
+    <h2>Audio Log 2</h2>
+    <p><a href="https://www.youtube.com/watch?v=xQh_oJ8HYf8" target="_blank">Prehrať Audio Log 2</a></p>
+    <p>Zadaj odpoveď:</p>
+    <input id="a2" type="text">
+    <button onclick="checkAnswer(2)">Overiť</button>
+    <div id="r2"></div>
+</div>
+
+<div id="log3" class="block hidden">
+    <h2>Audio Log 3</h2>
+    <p><a href="https://www.youtube.com/watch?v=98JJQZwSFw0" target="_blank">Prehrať Audio Log 3</a></p>
+    <p>Zadaj odpoveď:</p>
+    <input id="a3" type="text">
+    <button onclick="checkAnswer(3)">Overiť</button>
+    <div id="r3"></div>
+</div>
+
+<div id="log4" class="block hidden">
+    <h2>Audio Log 4</h2>
+    <p><a href="https://www.youtube.com/watch?v=m5hfrnrYLnU" target="_blank">Prehrať Audio Log 4</a></p>
+    <p>Zadaj odpoveď:</p>
+    <input id="a4" type="text">
+    <button onclick="checkAnswer(4)">Overiť</button>
+    <div id="r4"></div>
+</div>
+
+<div id="finalMessage" class="hidden"></div>
+
+<script>
+let answers = {};
+
+fetch("https://api.github.com/gists/03589cb9fcade61dabffcf7d2e235c85")
+    .then(res => res.json())
+    .then(gist => {
+        const file = gist.files["gistfile1.txt"].content;
+        answers = JSON.parse(file);
+    });
+
+function normalize(str) {
+    return str.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+}
+
+function checkAnswer(num) {
+    const input = document.getElementById("a" + num).value;
+    const result = document.getElementById("r" + num);
+
+    if (!answers[num]) {
+        result.innerHTML = "<span style='color:red'>Systém čaká na dáta…</span>";
+        return;
+    }
+
+    if (normalize(input) === normalize(answers[num])) {
+        result.innerHTML = "<span style='color:#4ade80'>Správne.</span>";
+
+        const next = document.getElementById("log" + (num + 1));
+        if (next) next.classList.remove("hidden");
+
+        if (num === 4) {
+            document.getElementById("finalMessage").classList.remove("hidden");
+            document.getElementById("finalMessage").innerText =
+`Pošli toto xx.Pixelovi:
+
+14hgč4fg9#`;
+        }
+
+    } else {
+        result.innerHTML = "<span style='color:#f87171'>Nesprávne.</span>";
+    }
+}
+</script>
+
+</body>
+</html>
